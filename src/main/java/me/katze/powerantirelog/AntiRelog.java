@@ -7,6 +7,7 @@ import me.katze.powerantirelog.command.TestCommand;
 import me.katze.powerantirelog.listener.*;
 import me.katze.powerantirelog.manager.CooldownManager;
 import me.katze.powerantirelog.manager.PvPManager;
+import me.katze.powerantirelog.placeholder.AntiRelogPlaceholder;
 import me.katze.powerantirelog.utility.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -16,6 +17,7 @@ public final class AntiRelog extends JavaPlugin {
     public boolean CMI_HOOK = false;
     public boolean ESSENTIALS_HOOK = false;
     public boolean WORLDGUARD_HOOK = false;
+    public boolean PLACEHOLDERAPI_HOOK = false;
 
     private final int PLUGIN_ID = 23642;
     public final String VERSION = "1.6";
@@ -40,6 +42,7 @@ public final class AntiRelog extends JavaPlugin {
 
         loadListeners();
         loadCommands();
+        loadPlaceholders();
 
         pvpmanager = new PvPManager();
         cooldownManager = new CooldownManager();
@@ -72,6 +75,12 @@ public final class AntiRelog extends JavaPlugin {
         saveConfig();
     }
 
+    private void loadPlaceholders() {
+        if (PLACEHOLDERAPI_HOOK) {
+            new AntiRelogPlaceholder(this).register();
+        }
+    }
+
     public void loadMetrics() {
         Metrics metrics = new Metrics(this, PLUGIN_ID);
     }
@@ -85,6 +94,9 @@ public final class AntiRelog extends JavaPlugin {
         }
         if (getServer().getPluginManager().getPlugin("WorldGuard") != null) {
             WORLDGUARD_HOOK = true;
+        }
+        if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            PLACEHOLDERAPI_HOOK = true;
         }
     }
 

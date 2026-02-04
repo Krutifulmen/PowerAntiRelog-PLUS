@@ -24,6 +24,8 @@ import java.util.Map;
 
 public class PvPManager {
     private static HashMap<String, Integer> pvpMap;
+    private static final Map<String, Map<String, Long>> combatMap = new HashMap<>();
+    private static final Map<String, String> lastOpponentMap = new HashMap<>();
 
     public PvPManager() {
         this.pvpMap = new HashMap<>();
@@ -68,6 +70,7 @@ public class PvPManager {
         pvpMap.remove(player.getName());
 
         CooldownManager.removePlayer(player);
+        clearCombatData(player.getName());
     }
 
     public static boolean isPvP(Player player) {
@@ -77,6 +80,44 @@ public class PvPManager {
             return true;
         }
         return false;
+    }
+
+    public static int getTimeLeft(Player player) {
+        Integer time = pvpMap.get(player.getName());
+        if (time == null) {
+            return 0;
+        }
+        return time;
+    }
+
+    public static void recordCombat(Player damager, Player target) {
+        if (damager == null || target == null) {
+            return;
+        }
+        String damagerName = damager.getName();
+        String targetName = target.getName();
+        if (damagerName.equalsIgnoreCase(targetName)) {
+            return;
+        }
+
+        combatMap.computeIfAbsent(damagerName, key -> new HashMap<>())
+                .put(targetName, System.currentTimeMillis());
+        combatMap.computeIfAbsent(targetName, key -> new HashMap<>())
+                .put(damagerName, System.currentTimeMillis());
+        lastOpponentMap.put(damagerName, targetName);
+        lastOpponentMap.put(targetName, damagerName);
+    }
+
+    public static String getLastOpponentName(Player player) {
+        return lastOpponentMap.get(player.getName());
+    }
+
+    public static Map<String, Long> getOpponents(Player player) {
+        Map<String, Long> opponents = combatMap.get(player.getName());
+        if (opponents == null) {
+            return new HashMap<>();
+        }
+        return new HashMap<>(opponents);
     }
 
     public static void leave(Player player) {
@@ -168,6 +209,7 @@ public class PvPManager {
 
             if (time <= 0) {
                 iterator.remove();
+                clearCombatData(name);
                 Player player = Bukkit.getPlayer(name);
                 if (player != null) {
                     player.sendMessage(
@@ -189,6 +231,7 @@ public class PvPManager {
         }
 
         CooldownManager.removePlayer(player);
+        clearCombatData(name);
     }
 
     private static void sendCommands(boolean start, Player player) {
@@ -212,6 +255,14 @@ public class PvPManager {
                     .replace("[player]", "")
                     .replace("[console]", "");
             Bukkit.getServer().dispatchCommand(sender, replacedString);
+        }
+    }
+
+    private static void clearCombatData(String name) {
+        combatMap.remove(name);
+        lastOpponentMap.remove(name);
+        for (Map<String, Long> opponents : combatMap.values()) {
+            opponents.remove(name);
         }
     }
 }
