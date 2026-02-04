@@ -80,6 +80,8 @@ public class PvPManager {
     }
 
     public static void leave(Player player) {
+        removeFromMaps(player);
+
         if (AntiRelog.getInstance().getConfig().getBoolean("settings.leave.kill")) {
             player.damage(player.getHealth());
             player.setHealth(0);
@@ -89,8 +91,6 @@ public class PvPManager {
             String replacedString = StringUtility.getMessage(string).replace("{player}", player.getName());
             Bukkit.getServer().broadcastMessage(replacedString);
         }
-
-        removeFromMaps(player);
     }
 
     private static void disable(Player player) {
