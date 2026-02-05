@@ -122,8 +122,9 @@ public class PvPManager {
 
     public static void leave(Player player) {
         if (AntiRelog.getInstance().getConfig().getBoolean("settings.leave.kill")) {
-            player.damage(player.getHealth());
-            player.setHealth(0);
+            if (!player.isDead()) {
+                player.setHealth(0);
+            }
         }
 
         for (String string : AntiRelog.getInstance().getConfig().getStringList("settings.leave.message")) {
