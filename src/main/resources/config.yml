@@ -35,6 +35,9 @@ settings:
     command: true
     teleport: true
     ender-chest: true
+    block-place: false
+    block-break: false
+    potion-throw: false
 
   # Установите 0, чтобы отключить задержки
   cooldown:
