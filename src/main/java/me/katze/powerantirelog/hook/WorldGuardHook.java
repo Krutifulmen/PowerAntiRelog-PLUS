@@ -6,11 +6,12 @@ import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.Flag;
-import com.sk89q.worldguard.protection.flags.FlagConflictException;
 import com.sk89q.worldguard.protection.flags.StateFlag;
+import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;
 import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import org.bukkit.entity.Player;
 
 public class WorldGuardHook {
@@ -39,7 +40,7 @@ public class WorldGuardHook {
             return null;
         }
         RegionQuery query = container.createQuery();
-        Location location = new Location(bukkitLocation.getWorld(), bukkitLocation.getX(),
+        Location location = new Location(BukkitAdapter.adapt(bukkitLocation.getWorld()), bukkitLocation.getX(),
                 bukkitLocation.getY(), bukkitLocation.getZ());
         return query.getApplicableRegions(location);
     }
