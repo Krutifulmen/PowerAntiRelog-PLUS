@@ -39,6 +39,12 @@ settings:
     block-break: false
     potion-throw: false
 
+  worldguard:
+    cancel:
+      ender-pearl: false
+      golden-apple: false
+      potion-throw: false
+
   # Установите 0, чтобы отключить задержки
   cooldown:
     golden-apple: 0

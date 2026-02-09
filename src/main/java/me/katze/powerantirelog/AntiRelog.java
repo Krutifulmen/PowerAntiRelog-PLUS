@@ -4,6 +4,7 @@ import co.aikar.commands.PaperCommandManager;
 import me.katze.powerantirelog.command.HelpCommand;
 import me.katze.powerantirelog.command.ReloadCommand;
 import me.katze.powerantirelog.command.TestCommand;
+import me.katze.powerantirelog.hook.WorldGuardHook;
 import me.katze.powerantirelog.listener.*;
 import me.katze.powerantirelog.manager.CooldownManager;
 import me.katze.powerantirelog.manager.PvPManager;
@@ -25,6 +26,7 @@ public final class AntiRelog extends JavaPlugin {
     public final String TELEGRAM_URL = "https://t.me/core2k21";
 
     private static AntiRelog instance;
+    private WorldGuardHook worldGuardHook;
     public PvPManager pvpmanager;
     public CooldownManager cooldownManager;
 
@@ -95,6 +97,7 @@ public final class AntiRelog extends JavaPlugin {
         }
         if (getServer().getPluginManager().getPlugin("WorldGuard") != null) {
             WORLDGUARD_HOOK = true;
+            worldGuardHook = new WorldGuardHook();
         }
         if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
             PLACEHOLDERAPI_HOOK = true;
@@ -103,5 +106,9 @@ public final class AntiRelog extends JavaPlugin {
 
     public static AntiRelog getInstance() {
         return instance;
+    }
+
+    public WorldGuardHook getWorldGuardHook() {
+        return worldGuardHook;
     }
 }
