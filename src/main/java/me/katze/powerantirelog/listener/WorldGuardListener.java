@@ -60,7 +60,7 @@ public class WorldGuardListener implements Listener {
         if (fromFlag && !toFlag) {
             event.setTo(event.getFrom());
             player.sendMessage(StringUtility.getMessage(
-                    AntiRelog.getInstance().getConfig().getString("messages.block")));
+                    AntiRelog.getInstance().getConfig().getString("messages.leave-region")));
         }
     }
 
@@ -85,7 +85,7 @@ public class WorldGuardListener implements Listener {
         if (fromFlag && !toFlag) {
             event.setCancelled(true);
             player.sendMessage(StringUtility.getMessage(
-                    AntiRelog.getInstance().getConfig().getString("messages.block")));
+                    AntiRelog.getInstance().getConfig().getString("messages.leave-region")));
         }
     }
 
