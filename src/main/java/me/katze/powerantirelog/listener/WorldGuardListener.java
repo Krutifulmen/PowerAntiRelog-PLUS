@@ -5,6 +5,7 @@ import me.katze.powerantirelog.hook.WorldGuardHook;
 import me.katze.powerantirelog.manager.PvPManager;
 import me.katze.powerantirelog.utility.StringUtility;
 import org.bukkit.Material;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.ThrownPotion;
 import org.bukkit.event.Event;
@@ -34,7 +35,7 @@ public class WorldGuardListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onMove(PlayerMoveEvent event) {
         if (!AntiRelog.getInstance().WORLDGUARD_HOOK) {
             return;
@@ -58,13 +59,12 @@ public class WorldGuardListener implements Listener {
         boolean fromFlag = hook.isLeaveInPvpMode(player, event.getFrom());
         boolean toFlag = hook.isLeaveInPvpMode(player, event.getTo());
         if (fromFlag && !toFlag) {
-            event.setTo(event.getFrom());
-            player.sendMessage(StringUtility.getMessage(
-                    AntiRelog.getInstance().getConfig().getString("messages.leave-region")));
+            forceBackInside(event.getPlayer(), event.getFrom());
+            event.setCancelled(true);
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onTeleport(PlayerTeleportEvent event) {
         if (!AntiRelog.getInstance().WORLDGUARD_HOOK) {
             return;
@@ -84,9 +84,14 @@ public class WorldGuardListener implements Listener {
         boolean toFlag = hook.isLeaveInPvpMode(player, event.getTo());
         if (fromFlag && !toFlag) {
             event.setCancelled(true);
-            player.sendMessage(StringUtility.getMessage(
-                    AntiRelog.getInstance().getConfig().getString("messages.leave-region")));
+            forceBackInside(player, event.getFrom());
         }
+    }
+
+    private void forceBackInside(Player player, Location safeLocation) {
+        player.teleport(safeLocation);
+        player.sendMessage(StringUtility.getMessage(
+                AntiRelog.getInstance().getConfig().getString("messages.leave-region")));
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
