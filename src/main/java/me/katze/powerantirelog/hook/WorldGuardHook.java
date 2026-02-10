@@ -14,27 +14,53 @@ import com.sk89q.worldguard.protection.regions.RegionQuery;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import org.bukkit.entity.Player;
 
+import java.util.logging.Logger;
+
 public class WorldGuardHook {
+
+    public static final String LEAVE_IN_PVP_MODE_FLAG_NAME = "leave-in-pvpmode";
 
     private final StateFlag leaveInPvpModeFlag;
 
-    public WorldGuardHook() {
+    private WorldGuardHook(StateFlag leaveInPvpModeFlag) {
+        this.leaveInPvpModeFlag = leaveInPvpModeFlag;
+    }
+
+    public static WorldGuardHook createAndRegister(Logger logger) {
         FlagRegistry registry = WorldGuard.getInstance().getFlagRegistry();
-        StateFlag flag = new StateFlag("leave-in-pvpmode", false);
+        StateFlag flag = new StateFlag(LEAVE_IN_PVP_MODE_FLAG_NAME, false);
         try {
             registry.register(flag);
+            return new WorldGuardHook(flag);
+        } catch (IllegalStateException exception) {
+            logger.warning("Cannot register WorldGuard flag '" + LEAVE_IN_PVP_MODE_FLAG_NAME
+                    + "' at this stage. Will try to use existing flag only.");
         } catch (FlagConflictException exception) {
-            Flag<?> existing = registry.get("leave-in-pvpmode");
+            Flag<?> existing = registry.get(LEAVE_IN_PVP_MODE_FLAG_NAME);
             if (existing instanceof StateFlag) {
-                flag = (StateFlag) existing;
+                return new WorldGuardHook((StateFlag) existing);
             } else {
                 throw new IllegalStateException("WorldGuard flag leave-in-pvpmode already exists and is not a StateFlag.");
             }
         }
-        leaveInPvpModeFlag = flag;
+
+        return fromExistingFlag(logger);
     }
 
-    public ApplicableRegionSet getRegions(Player player, org.bukkit.Location bukkitLocation) {
+    public static WorldGuardHook fromExistingFlag(Logger logger) {
+        FlagRegistry registry = WorldGuard.getInstance().getFlagRegistry();
+        Flag<?> existing = registry.get(LEAVE_IN_PVP_MODE_FLAG_NAME);
+        if (existing instanceof StateFlag) {
+            return new WorldGuardHook((StateFlag) existing);
+        }
+        if (existing != null) {
+            logger.warning("WorldGuard flag '" + LEAVE_IN_PVP_MODE_FLAG_NAME
+                    + "' exists but is not StateFlag. WorldGuard integration disabled.");
+        }
+        return null;
+    }
+
+    public ApplicableRegionSet getRegions(org.bukkit.Location bukkitLocation) {
         RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
         if (container == null) {
             return null;
@@ -46,7 +72,7 @@ public class WorldGuardHook {
     }
 
     public StateFlag.State getFlagState(Player player, org.bukkit.Location bukkitLocation, StateFlag flag) {
-        ApplicableRegionSet regions = getRegions(player, bukkitLocation);
+        ApplicableRegionSet regions = getRegions(bukkitLocation);
         if (regions == null) {
             return null;
         }

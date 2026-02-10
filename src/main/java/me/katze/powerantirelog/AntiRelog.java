@@ -34,9 +34,9 @@ public final class AntiRelog extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
-        System.out.println("Version: " + CREATOR);
-        System.out.println("By: " + VERSION);
-        System.out.println("Support: " + TELEGRAM_URL);
+        getLogger().info("Version: " + CREATOR);
+        getLogger().info("By: " + VERSION);
+        getLogger().info("Support: " + TELEGRAM_URL);
 
         loadDepend();
         loadMetrics();
@@ -97,7 +97,10 @@ public final class AntiRelog extends JavaPlugin {
         }
         if (getServer().getPluginManager().getPlugin("WorldGuard") != null) {
             WORLDGUARD_HOOK = true;
-            worldGuardHook = new WorldGuardHook();
+            worldGuardHook = WorldGuardHook.createAndRegister(getLogger());
+            if (worldGuardHook == null) {
+                getLogger().warning("WorldGuard flag hook disabled: add custom flag leave-in-pvpmode via WorldGuard startup, or use plugin load: STARTUP.");
+            }
         }
         if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
             PLACEHOLDERAPI_HOOK = true;
