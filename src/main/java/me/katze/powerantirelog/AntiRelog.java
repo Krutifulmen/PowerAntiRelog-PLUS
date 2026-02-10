@@ -4,9 +4,11 @@ import co.aikar.commands.PaperCommandManager;
 import me.katze.powerantirelog.command.HelpCommand;
 import me.katze.powerantirelog.command.ReloadCommand;
 import me.katze.powerantirelog.command.TestCommand;
+import me.katze.powerantirelog.hook.WorldGuardHook;
 import me.katze.powerantirelog.listener.*;
 import me.katze.powerantirelog.manager.CooldownManager;
 import me.katze.powerantirelog.manager.PvPManager;
+import me.katze.powerantirelog.placeholder.AntiRelogPlaceholder;
 import me.katze.powerantirelog.utility.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -16,6 +18,7 @@ public final class AntiRelog extends JavaPlugin {
     public boolean CMI_HOOK = false;
     public boolean ESSENTIALS_HOOK = false;
     public boolean WORLDGUARD_HOOK = false;
+    public boolean PLACEHOLDERAPI_HOOK = false;
 
     private final int PLUGIN_ID = 23642;
     public final String VERSION = "1.6";
@@ -23,6 +26,7 @@ public final class AntiRelog extends JavaPlugin {
     public final String TELEGRAM_URL = "https://t.me/core2k21";
 
     private static AntiRelog instance;
+    private WorldGuardHook worldGuardHook;
     public PvPManager pvpmanager;
     public CooldownManager cooldownManager;
 
@@ -30,9 +34,9 @@ public final class AntiRelog extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
-        System.out.println("Version: " + CREATOR);
-        System.out.println("By: " + VERSION);
-        System.out.println("Support: " + TELEGRAM_URL);
+        getLogger().info("Version: " + CREATOR);
+        getLogger().info("By: " + VERSION);
+        getLogger().info("Support: " + TELEGRAM_URL);
 
         loadDepend();
         loadMetrics();
@@ -40,6 +44,7 @@ public final class AntiRelog extends JavaPlugin {
 
         loadListeners();
         loadCommands();
+        loadPlaceholders();
 
         pvpmanager = new PvPManager();
         cooldownManager = new CooldownManager();
@@ -65,11 +70,18 @@ public final class AntiRelog extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new InteractListener(), this);
         Bukkit.getPluginManager().registerEvents(new CommandListener(), this);
         Bukkit.getPluginManager().registerEvents(new CooldownListener(), this);
+        Bukkit.getPluginManager().registerEvents(new RestrictionListener(), this);
     }
 
     private void loadConfig() {
         getConfig().options().copyDefaults(true);
         saveConfig();
+    }
+
+    private void loadPlaceholders() {
+        if (PLACEHOLDERAPI_HOOK) {
+            new AntiRelogPlaceholder(this).register();
+        }
     }
 
     public void loadMetrics() {
@@ -85,10 +97,21 @@ public final class AntiRelog extends JavaPlugin {
         }
         if (getServer().getPluginManager().getPlugin("WorldGuard") != null) {
             WORLDGUARD_HOOK = true;
+            worldGuardHook = WorldGuardHook.createAndRegister(getLogger());
+            if (worldGuardHook == null) {
+                getLogger().warning("WorldGuard flag hook disabled: add custom flag leave-in-pvpmode via WorldGuard startup, or use plugin load: STARTUP.");
+            }
+        }
+        if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            PLACEHOLDERAPI_HOOK = true;
         }
     }
 
     public static AntiRelog getInstance() {
         return instance;
+    }
+
+    public WorldGuardHook getWorldGuardHook() {
+        return worldGuardHook;
     }
 }

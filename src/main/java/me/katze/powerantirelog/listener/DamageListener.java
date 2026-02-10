@@ -27,6 +27,7 @@ public class DamageListener implements Listener {
 
         PvPManager.addPlayer(target);
         PvPManager.addPlayer(damager);
+        PvPManager.recordCombat(damager, target);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -42,6 +43,7 @@ public class DamageListener implements Listener {
 
         PvPManager.addPlayer(target);
         PvPManager.addPlayer(damager);
+        PvPManager.recordCombat(damager, target);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -52,6 +54,7 @@ public class DamageListener implements Listener {
         Player damager = (Player) e.getPotion().getShooter();
 
         for (LivingEntity target : e.getAffectedEntities()) {
+            if (!(target instanceof Player)) continue;
             if (target == damager) return;
 
             for (PotionEffect effect : e.getPotion().getEffects()) {
@@ -59,6 +62,7 @@ public class DamageListener implements Listener {
 
                     PvPManager.addPlayer(damager);
                     PvPManager.addPlayer((Player) target);
+                    PvPManager.recordCombat(damager, (Player) target);
                 }
             }
         }

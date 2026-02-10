@@ -35,6 +35,15 @@ settings:
     command: true
     teleport: true
     ender-chest: true
+    block-place: false
+    block-break: false
+    potion-throw: false
+
+  worldguard:
+    cancel:
+      ender-pearl: false
+      golden-apple: false
+      potion-throw: false
 
   # Установите 0, чтобы отключить задержки
   cooldown:
@@ -69,6 +78,7 @@ messages:
   start: "§x§E§3§2§6§3§6&l| &fВы начали PvP!"
   end: "§x§E§3§2§6§3§6&l| &aВы больше не находитесь в бою."
   block: "§x§E§3§2§6§3§6&l| &cВы не можете делать это в режиме PvP!"
+  leave-region: "§x§E§3§2§6§3§6&l| &cВы не можете покинуть этот регион в режиме PvP!"
   cooldown: "§x§E§3§2§6§3§6&l| &fПодождите §x§E§3§2§6§3§6{time}, &fчтобы использовать этот предмет!"
 
   # Установите "", чтобы отключить
