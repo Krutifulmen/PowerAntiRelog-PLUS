@@ -16,7 +16,7 @@ public class CommandListener implements Listener {
         Player player = e.getPlayer();
 
         if (!PvPManager.isPvP(player)) return;
-        if (!AntiRelog.getInstance().getConfig().getBoolean("settings.cancel.command")) return;
+        if (!AntiRelog.getInstance().getCancelSetting("command")) return;
 
         String command = e.getMessage().split(" ")[0].replaceFirst("/", "");
 

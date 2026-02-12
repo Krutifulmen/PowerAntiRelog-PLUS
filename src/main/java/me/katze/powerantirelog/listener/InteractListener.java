@@ -24,12 +24,12 @@ public class InteractListener implements Listener {
 
         if (block.getType() == Material.ENDER_CHEST) {
 
-            if (AntiRelog.getInstance().getConfig().getBoolean("settings.cancel.ender-chest")) {
+            if (AntiRelog.getInstance().getCancelSetting("ender-chest")) {
                 // e.getPlayer().sendMessage(
                 // StringUtility.getMessage(AntiRelog.getInstance().getConfig().getString("messages.block")));
                 e.setCancelled(true);
             }
-        } else if (AntiRelog.getInstance().getConfig().getBoolean("settings.cancel.interact")) {
+        } else if (AntiRelog.getInstance().getCancelSetting("interact")) {
             // e.getPlayer().sendMessage(
             // StringUtility.getMessage(AntiRelog.getInstance().getConfig().getString("messages.block")));
             e.setCancelled(true);

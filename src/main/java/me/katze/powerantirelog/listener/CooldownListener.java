@@ -60,7 +60,7 @@ public class CooldownListener implements Listener {
 
                 return;
             }
-        } else if (AntiRelog.getInstance().getConfig().getBoolean("settings.cancel.teleport")) {
+        } else if (AntiRelog.getInstance().getCancelSetting("teleport")) {
             e.getPlayer().sendMessage(
                     StringUtility.getMessage(AntiRelog.getInstance().getConfig().getString("messages.block")));
             e.setCancelled(true);
